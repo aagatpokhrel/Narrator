@@ -1,4 +1,4 @@
-# narrator
+# Narrator
 
 A new Flutter project.
 
