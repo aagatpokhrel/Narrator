@@ -1,16 +1,13 @@
 # Narrator
 
-A new Flutter project.
+Audiobook reading comprehension using Flutter. 
 
 ## Getting Started
+- First install flutter and android sdk tools required for this project.
+- Then, clone this repository.
+- On the terminal type `flutter pub get` to get all the packages required for this project.
+- Set up your own server, you can create a simple flask server and deploy https://medium.com/analytics-vidhya/deploying-bert-on-heroku-7df1d23f9c43
+- Compile the project with `flutter run --no-sound-null-safety` (no null safety avoids bugs by null pointers)
+- Sit back and Enjoy
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
