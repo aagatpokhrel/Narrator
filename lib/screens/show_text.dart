@@ -119,10 +119,13 @@ class _ShowTextState extends State<ShowText> {
             'title':widget.paragraphText.title})
         );
 
-        final get_response =await http.get(url);
-        final decoded = json.decode(get_response.body) as Map<String,dynamic>;
-        final final_respone = decoded['answer'];
-        print(final_respone);
+        final decoded = json.decode(post_response.body) as Map<String,dynamic>;
+        final response = decoded['answer'];
+        flutterTts.speak(response);
+        // final get_response =await http.get(url);
+        // final decoded = json.decode(get_response.body) as Map<String,dynamic>;
+        // final final_respone = decoded['answer'];
+        // print(final_respone);
       }
     }
   }

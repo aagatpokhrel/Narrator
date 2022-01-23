@@ -33,8 +33,8 @@ class ParagraphText {
     );
     const url = 'http://127.0.0.1:5000/add_data';
     http.Response response =await http.post(url, body: json.encode({
-      'content':title,
-      'title':content})
+      'title':title,
+      'content':content})
     ); 
   }
   void delete(){
