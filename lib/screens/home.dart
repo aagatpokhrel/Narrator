@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
 import 'package:dummy/widgets/expandable_fab.dart';
 import 'package:dummy/widgets/paragraph_text.dart';
 import 'add_text.dart';
@@ -61,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ActionButton(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (_) => const AddTextScreen()
+                builder: (_) => const AddTextScreen(isEdit: false,)
               ),
             ),
             // onPressed: () => _showAction(context, 0),
@@ -81,11 +80,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
                   final paragraphText = ParagraphText(fileName, fileContents.toString());
                   paragraphText.addToAll();
-                  const url = 'http://127.0.0.1:5000/add_data';
-                  final response = http.post(url, body: json.encode({
-                    'content':paragraphText.title,
-                    'title':paragraphText.content})
-                  );
                   Navigator.push(context, 
                   MaterialPageRoute(builder: (context)=> ShowText(paragraphText: paragraphText))); 
 

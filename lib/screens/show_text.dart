@@ -59,7 +59,7 @@ class _ShowTextState extends State<ShowText> {
         animate: _isListening,
         glowColor: Theme.of(context).primaryColor,
         endRadius: 75.0,
-        duration: const Duration(milliseconds: 2000),
+        duration: const Duration(milliseconds: 1000),
         repeatPauseDuration: const Duration(milliseconds: 100),
         repeat: true,
         child: FloatingActionButton(
@@ -114,7 +114,7 @@ class _ShowTextState extends State<ShowText> {
       else{
         const url = 'http://127.0.0.1:5000/question_answer';
         
-        final post_response = http.post(url, body: json.encode({
+        final post_response = await http.post(url, body: json.encode({
             'question':_text,
             'title':widget.paragraphText.title})
         );
@@ -123,7 +123,6 @@ class _ShowTextState extends State<ShowText> {
         final decoded = json.decode(get_response.body) as Map<String,dynamic>;
         final final_respone = decoded['answer'];
         print(final_respone);
-        
       }
     }
   }

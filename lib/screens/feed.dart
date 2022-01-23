@@ -1,3 +1,4 @@
+import 'package:dummy/screens/add_text.dart';
 import 'package:flutter/material.dart';
 import 'package:dummy/widgets/paragraph_text.dart';
 import 'show_text.dart';
@@ -40,6 +41,30 @@ class _FeedState extends State<Feed> {
               final allText = allTexts[index];
               return ListTile(
                 title: Text(allText.title),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min, 
+                  children: [
+                    IconButton(
+                      onPressed: (){
+                        Navigator.push(
+                          context, 
+                          MaterialPageRoute(
+                            builder: (context) => AddTextScreen(paragraphText: allText,isEdit: true,))
+                        );
+                      },
+                      icon: const Icon(Icons.edit)
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: (){
+                        setState(() {
+                          allText.delete();
+                        });
+                      },
+                    ),
+                      
+                  ],
+                ),
                 onTap: (){
                   Navigator.push(context, CupertinoPageRoute(builder: (context) => ShowText(paragraphText:allText)));
                   // print('tapped');
