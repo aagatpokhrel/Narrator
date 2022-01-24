@@ -8,16 +8,16 @@ import 'dart:convert';
 
 import 'package:dummy/widgets/paragraph_text.dart';
 
-class ShowText extends StatefulWidget {
+class ShowContent extends StatefulWidget {
 
   final ParagraphText paragraphText;
-  const ShowText({Key? key, required this.paragraphText}) : super(key: key);
+  const ShowContent({Key? key, required this.paragraphText}) : super(key: key);
 
   @override
-    _ShowTextState createState() => _ShowTextState();
+    _ShowContentState createState() => _ShowContentState();
 }
 
-class _ShowTextState extends State<ShowText> {
+class _ShowContentState extends State<ShowContent> {
   FlutterTts flutterTts = FlutterTts();
   late String contentOfFile;
   final stt.SpeechToText _speech= stt.SpeechToText();

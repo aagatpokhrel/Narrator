@@ -1,9 +1,8 @@
-import 'package:dummy/screens/add_text.dart';
+import 'package:dummy/screens/input_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:dummy/widgets/paragraph_text.dart';
-import 'show_text.dart';
+import 'content_screen.dart';
 import 'package:flutter/cupertino.dart';
-
 
 class Feed extends StatefulWidget {
   const Feed({ Key? key }) : super(key: key);
@@ -49,7 +48,7 @@ class _FeedState extends State<Feed> {
                         Navigator.push(
                           context, 
                           MaterialPageRoute(
-                            builder: (context) => AddTextScreen(paragraphText: allText,isEdit: true,))
+                            builder: (context) => InputScreen(paragraphText: allText,isEdit: true,))
                         );
                       },
                       icon: const Icon(Icons.edit)
@@ -66,7 +65,7 @@ class _FeedState extends State<Feed> {
                   ],
                 ),
                 onTap: (){
-                  Navigator.push(context, CupertinoPageRoute(builder: (context) => ShowText(paragraphText:allText)));
+                  Navigator.push(context, CupertinoPageRoute(builder: (context) => ShowContent(paragraphText:allText)));
                   // print('tapped');
                 },
               );

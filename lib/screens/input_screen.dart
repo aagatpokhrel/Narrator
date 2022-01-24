@@ -3,18 +3,18 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:dummy/widgets/paragraph_text.dart';
-import 'show_text.dart';
+import 'content_screen.dart';
 
-class AddTextScreen extends StatefulWidget {
+class InputScreen extends StatefulWidget {
   final ParagraphText? paragraphText;
   final bool isEdit;
-  const AddTextScreen({ Key? key ,this.paragraphText, required this.isEdit}) : super(key: key);
+  const InputScreen({ Key? key ,this.paragraphText, required this.isEdit}) : super(key: key);
 
   @override
-  _AddTextScreenState createState() => _AddTextScreenState();
+  _InputScreenState createState() => _InputScreenState();
 }
 
-class _AddTextScreenState extends State<AddTextScreen> {
+class _InputScreenState extends State<InputScreen> {
 
   late String title;
   late String content;
@@ -32,7 +32,7 @@ class _AddTextScreenState extends State<AddTextScreen> {
     Navigator.pop(context);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context)=> ShowText(paragraphText: paragraphText))
+      MaterialPageRoute(builder: (context)=> ShowContent(paragraphText: paragraphText))
     );
   }
 
@@ -43,7 +43,7 @@ class _AddTextScreenState extends State<AddTextScreen> {
     Navigator.pop(context);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context)=> ShowText(paragraphText: paragraphText))
+      MaterialPageRoute(builder: (context)=> ShowContent(paragraphText: paragraphText))
     );
   }
 
