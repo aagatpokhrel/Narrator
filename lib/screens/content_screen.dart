@@ -44,6 +44,7 @@ class _ShowContentState extends State<ShowContent> {
 
   @override
   void dispose(){
+    super.dispose();
     flutterTts.stop();
     _speech.stop();
   }
@@ -114,18 +115,14 @@ class _ShowContentState extends State<ShowContent> {
       else{
         const url = 'http://127.0.0.1:5000/question_answer';
         
-        final post_response = await http.post(url, body: json.encode({
+        http.post(url, body: json.encode({
             'question':_text,
-            'title':widget.paragraphText.title})
-        );
-
-        final decoded = json.decode(post_response.body) as Map<String,dynamic>;
-        final response = decoded['answer'];
-        flutterTts.speak(response);
-        // final get_response =await http.get(url);
-        // final decoded = json.decode(get_response.body) as Map<String,dynamic>;
-        // final final_respone = decoded['answer'];
-        // print(final_respone);
+            'title':widget.paragraphText.title,
+            'user_id': 1,
+          })
+        ).then((response) {
+            flutterTts.speak(response.body);
+        });
       }
     }
   }

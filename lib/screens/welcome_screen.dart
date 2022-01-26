@@ -20,8 +20,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         'Narrator',
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
       ),
-      image: Image.network(
-          'https://flutter.io/images/catalog-widget-placeholder.png'),
+      image: Image.asset(
+          'assets/images/logo.png'),
       backgroundColor: Colors.white,
       loaderColor: Colors.red,
     );

@@ -12,10 +12,16 @@ class Feed extends StatefulWidget {
 }
 
 class _FeedState extends State<Feed> {
+  @override void initState() {
+    // TODO: implement initState
+    super.initState();
+    // getTextData();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      
+    
+      return SingleChildScrollView(
       child: Column(
         children: [
           Container(
@@ -47,7 +53,7 @@ class _FeedState extends State<Feed> {
                       onPressed: (){
                         Navigator.push(
                           context, 
-                          MaterialPageRoute(
+                          CupertinoPageRoute(
                             builder: (context) => InputScreen(paragraphText: allText,isEdit: true,))
                         );
                       },
@@ -57,7 +63,7 @@ class _FeedState extends State<Feed> {
                       icon: const Icon(Icons.delete),
                       onPressed: (){
                         setState(() {
-                          allText.delete();
+                          allText.delete(1);
                         });
                       },
                     ),
@@ -71,7 +77,7 @@ class _FeedState extends State<Feed> {
               );
 
             })
-      ],
+        ],
       ),
     );
   }
