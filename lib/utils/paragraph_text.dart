@@ -2,12 +2,24 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-final List<ParagraphText> allTexts= [
+List<ParagraphText> allTexts= [
+  ParagraphText(
+    'William',
+    'William is a good boy' 
+  ),
+  ParagraphText(
+    'Elon Musk',
+    'Elon is a good boy' 
+  ),
+  ParagraphText(
+    'Albert Einstein',
+    'Albert is a good boy' 
+  ),
 ];
 
 class ParagraphText {
-  late final String title;
-  late final String content;
+  late String title;
+  late String content;
 
   ParagraphText(
     this.title, 
@@ -29,6 +41,7 @@ class ParagraphText {
   }
   void delete(int userid) async{
     allTexts.remove(this);
+    print (this.content);
     const url = 'http://127.0.0.1:5000/delete_data';
     http.Response response =await http.post(url, body: json.encode({
       'title':title,

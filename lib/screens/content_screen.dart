@@ -1,12 +1,13 @@
+import 'dart:io';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
-import 'package:highlight_text/highlight_text.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import 'package:dummy/widgets/paragraph_text.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:dummy/utils/paragraph_text.dart';
+import 'package:file_picker/file_picker.dart';
 
 class ShowContent extends StatefulWidget {
 
@@ -18,6 +19,12 @@ class ShowContent extends StatefulWidget {
 }
 
 class _ShowContentState extends State<ShowContent> {
+
+  bool isEdit = false;
+
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
   FlutterTts flutterTts = FlutterTts();
   late String contentOfFile;
   final stt.SpeechToText _speech= stt.SpeechToText();
@@ -28,6 +35,14 @@ class _ShowContentState extends State<ShowContent> {
   @override
   void initState() {
     super.initState();
+    if (widget.paragraphText.title==""){
+      _titleController.text = '';
+      _descriptionController.text = '';
+    }
+    else{
+      _titleController.text = widget.paragraphText.title;
+      _descriptionController.text = widget.paragraphText.content;
+    }
   }
 
   void pause() async{
@@ -51,12 +66,36 @@ class _ShowContentState extends State<ShowContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.paragraphText.title),
+        elevation: 0.0,
+            actions: [              
+              isEdit ? IconButton(
+                icon: const Icon(Icons.check_circle_outline_outlined),
+                onPressed: () {
+                  setState(() {
+                    widget.paragraphText.delete(1);
+                    widget.paragraphText.addToAll(1);
+                    isEdit = false;
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  });
+                },
+              ):
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                onPressed: () {
+                  print (widget.paragraphText.title);
+                  widget.paragraphText.delete(1);
+                  setState(() {
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+              
+            ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: AvatarGlow(
+      floatingActionButton: (!isEdit)? AvatarGlow(
         animate: _isListening,
         glowColor: Theme.of(context).primaryColor,
         endRadius: 75.0,
@@ -67,19 +106,74 @@ class _ShowContentState extends State<ShowContent> {
           onPressed: _listen,
           child: Icon(_isListening ? Icons.mic : Icons.mic_none),
         ),
-      ),
+      ): (_descriptionController.text=='')? FloatingActionButton(
+        child: const Icon(Icons.upload_file_outlined) ,
+        onPressed: ()async {
+          FilePickerResult? result = await FilePicker.platform.pickFiles(
+            type: FileType.custom,
+            allowedExtensions: ['txt'],
+          );   
+          if (result != null) {
+            File file = File(result.files.single.path.toString());
+            final fileContents = file.readAsStringSync();
+            widget.paragraphText.content = fileContents.toString();
+            _descriptionController.text = fileContents.toString();
+          }
+        },
+      ):null,
+
       body: SingleChildScrollView(
         reverse: true,
         child: Container(
           padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 150.0),
-          child: Text(
-            widget.paragraphText.content,
-            style: const TextStyle(
-              fontSize: 32.0,
-              color: Colors.black,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
+          child:Column(
+            children: [
+              TextField(
+                onTap: (){
+                  setState(() {
+                    isEdit = true;
+                  });
+                },
+                onChanged: (text){
+                  widget.paragraphText.title = text;
+                },
+                controller: _titleController,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 24,
+                  ),
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Title'
+                ),
+              ),
+              TextField(
+                
+                onTap: (){
+                  setState(() {
+                    isEdit = true;
+                  });
+                },
+                onChanged: (text){
+                  widget.paragraphText.content = text;
+                  setState(() {
+                    isEdit = true;
+                  });
+                },
+                maxLines: 14,
+                controller: _descriptionController,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 18,
+                    height: 1.5,
+                  ),
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Start Wrting Text',
+                ),
+              ),
+            ],
+          )
         ),
       ),
     );

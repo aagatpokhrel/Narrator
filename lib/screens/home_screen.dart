@@ -1,18 +1,11 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:floating_search_bar/floating_search_bar.dart';
+import 'package:dummy/utils/paragraph_text.dart';
+import 'package:modal_side_sheet/modal_side_sheet.dart';
 
-import 'package:responsive_scaffold/responsive_scaffold.dart';
-import 'package:dummy/widgets/expandable_fab.dart';
-import 'package:dummy/widgets/paragraph_text.dart';
-import 'input_screen.dart';
-import 'feed_screen.dart';
 import 'content_screen.dart';
+import 'package:intl/intl.dart';
+
 
 class HomeScreen extends StatefulWidget {
   final int userId;
@@ -23,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  
+  bool openDrawer = false ;
   @override
   void initState() {
     super.initState();
@@ -32,69 +25,108 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text(
-      //     'Narrator',
-      //   ),
-      //   elevation: 0,
-      // ),
-      // detailBuilder: (BuildContext context, int index, bool tablet){
-      //   ShowContent(paragraphText: ,),
-      // },
-      drawer: const Drawer(
-        child: Text('Welcome To Options') ,
-        ),
-      backgroundColor: const Color(0xff7C7B9B), //
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              decoration:const BoxDecoration(
-                  color: Colors.white,
+      backgroundColor: const Color(0xffFFFFFF), // WHITE
+      body: CustomScrollView(
+        slivers: <Widget>[
+          SliverAppBar(
+            floating: true,
+            pinned: true,
+            snap: false,
+            centerTitle: false,
+            title:const Text('Narrator'),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.account_box_outlined),
+                onPressed: () {
+                  showModalSideSheet(
+                   context: context,
+                    body: ListView.builder(
+                      itemBuilder:(context,index){
+                        return ListTile(
+                          leading: const Icon(Icons.face),
+                          title: Text("I am on $index index"),
+                          trailing: const Icon(Icons.safety_divider),
+                        );
+                      },
+                    )
+                  );
+                },
+              ),
+            ],
+            bottom: AppBar(
+              title: Container(
+                width: double.infinity,
+                height: 40,
+                color: Colors.white,
+                child: const Center(
+                  child: TextField(
+                    decoration: InputDecoration(
+                        hintText: 'Search for Texts',
+                        prefixIcon: Icon(Icons.search),
+                    ),
+                  ),
                 ),
-              child:Feed() 
-           ),
-          )
-        ],
-      ),
-      floatingActionButton: ExpandableFab(
-        distance: 80.0,
-        children: [
-          ActionButton(
-            onPressed: () => Navigator.of(context).push(
-              CupertinoPageRoute(
-                builder: (_) => const InputScreen(isEdit: false,)
               ),
             ),
-            icon: const Icon(Icons.text_fields_outlined),
           ),
-          ActionButton(
-            onPressed: () async{
-                FilePickerResult? result = await FilePicker.platform.pickFiles(
-                  type: FileType.custom,
-                  allowedExtensions: ['txt'],
+          // const SizedBox(height: 20,),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                final currentText = allTexts[index];
+                return InkWell(
+                  onTap: (){
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(builder: (context)=> ShowContent(paragraphText:currentText,))
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          child: Container(
+                            padding:const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  currentText.title,
+                                ),
+                                Text(
+                                  currentText.content,
+                                  maxLines: 1,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Text(DateFormat.jm().format(DateTime.now())),
+                      ],
+                    ),
+                  ),
                 );
-          
-                if (result != null) {
-                  File file = File(result.files.single.path.toString());
-                  final fileName = result.files.first.name.split('.')[0];
-                  final fileContents = file.readAsStringSync();
-
-                  final paragraphText = ParagraphText(fileName, fileContents.toString());
-                  paragraphText.addToAll(1);
-                  Navigator.push(context, 
-                  CupertinoPageRoute(builder: (context)=> ShowContent(paragraphText: paragraphText))); 
-
-                } else {
-                    return;
-                }
-            },
-            icon: const Icon(Icons.upload_file),
+              },
+              childCount: allTexts.length,
             ),
+          ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed:(){
+          Navigator.of(context).push(
+            CupertinoPageRoute(
+              builder: (_) => ShowContent(paragraphText:ParagraphText('',''),)
+            )
+          );
+        },
+        child: const Icon(Icons.add),
+      ) 
     );
   }
 }
