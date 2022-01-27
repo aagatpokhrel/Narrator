@@ -198,13 +198,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
-  modal_side_sheet:
-    dependency: "direct main"
-    description:
-      name: modal_side_sheet
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.1"
   path:
     dependency: transitive
     description:
@@ -289,6 +282,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.4"
+  settings_ui:
+    dependency: "direct main"
+    description:
+      name: settings_ui
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.2"
   sky_engine:
     dependency: transitive
     description: flutter

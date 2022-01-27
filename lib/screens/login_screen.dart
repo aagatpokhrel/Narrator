@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:settings_ui/settings_ui.dart';
 
 import 'home_screen.dart';
 import 'register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:dummy/utils/paragraph_text.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login_screen';
@@ -92,8 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     'username':username,
                     'password':password})
                   ).then((response){
-                    print (response);
-                    if (response=="404"){
+                    if (response.body=="404"){
                       ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
@@ -103,9 +104,13 @@ class _LoginScreenState extends State<LoginScreen> {
                      );
                     }
                     else{
+                      user_id = int.parse(response.body);
+                      setState(() {
+                        getTextData();
+                      });
                       Navigator.pushReplacement(
                         context,
-                        CupertinoPageRoute(builder: (context) => HomeScreen(userId: 1,))
+                        CupertinoPageRoute(builder: (context) => HomeScreen(userName: username))
                       );
                     }
                   });

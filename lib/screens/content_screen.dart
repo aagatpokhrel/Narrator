@@ -9,16 +9,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:dummy/utils/paragraph_text.dart';
 import 'package:file_picker/file_picker.dart';
 
-class ShowContent extends StatefulWidget {
+class ContentScreen extends StatefulWidget {
 
   final ParagraphText paragraphText;
-  const ShowContent({Key? key, required this.paragraphText}) : super(key: key);
+  const ContentScreen({Key? key, required this.paragraphText}) : super(key: key);
 
   @override
-    _ShowContentState createState() => _ShowContentState();
+    _ContentScreenState createState() => _ContentScreenState();
 }
 
-class _ShowContentState extends State<ShowContent> {
+class _ContentScreenState extends State<ContentScreen> {
 
   bool isEdit = false;
 
@@ -36,6 +36,7 @@ class _ShowContentState extends State<ShowContent> {
   void initState() {
     super.initState();
     if (widget.paragraphText.title==""){
+      isEdit = true;
       _titleController.text = '';
       _descriptionController.text = '';
     }
@@ -74,8 +75,8 @@ class _ShowContentState extends State<ShowContent> {
                 icon: const Icon(Icons.check_circle_outline_outlined),
                 onPressed: () {
                   setState(() {
-                    widget.paragraphText.delete(1);
-                    widget.paragraphText.addToAll(1);
+                    widget.paragraphText.delete();
+                    widget.paragraphText.addToAll();
                     isEdit = false;
                     FocusManager.instance.primaryFocus?.unfocus();
                   });
@@ -85,7 +86,7 @@ class _ShowContentState extends State<ShowContent> {
                 icon: const Icon(Icons.delete_outline),
                 onPressed: () {
                   print (widget.paragraphText.title);
-                  widget.paragraphText.delete(1);
+                  widget.paragraphText.delete();
                   setState(() {
                   });
                   Navigator.pop(context);
@@ -106,7 +107,7 @@ class _ShowContentState extends State<ShowContent> {
           onPressed: _listen,
           child: Icon(_isListening ? Icons.mic : Icons.mic_none),
         ),
-      ): (_descriptionController.text=='')? FloatingActionButton(
+      ): ((_descriptionController.text==''))? FloatingActionButton(
         child: const Icon(Icons.upload_file_outlined) ,
         onPressed: ()async {
           FilePickerResult? result = await FilePicker.platform.pickFiles(

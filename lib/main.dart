@@ -1,4 +1,5 @@
 import 'package:dummy/screens/home_screen.dart';
+import 'package:dummy/screens/login_screen.dart';
 import 'package:dummy/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: HomeScreen(userId: 1,),
+      home: WelcomeScreen(),
     );
   }
 }

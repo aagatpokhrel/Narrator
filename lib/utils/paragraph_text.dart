@@ -15,7 +15,24 @@ List<ParagraphText> allTexts= [
     'Albert Einstein',
     'Albert is a good boy' 
   ),
+  ParagraphText(
+    'William Einstein',
+    'Albert is a good boy' 
+  ),
+  ParagraphText(
+    'James Einstein',
+    'Albert is a good boy' 
+  ),
+  ParagraphText(
+    'Jacob Einstein',
+    'Albert is a good boy' 
+  ),  
+  ParagraphText(
+    'Albert William',
+    'Albert is a good boy' 
+  ),
 ];
+late int user_id;
 
 class ParagraphText {
   late String title;
@@ -27,7 +44,7 @@ class ParagraphText {
   );
 
   // duplicate add is possible (needs some work here)
-  void addToAll(int userid) async{
+  void addToAll() async{
     allTexts.add(
       ParagraphText(title,content)
     );
@@ -35,18 +52,18 @@ class ParagraphText {
     http.Response response =await http.post(url, body: json.encode({
       'title':title,
       'content':content,
-      'user_id':userid
+      'user_id':user_id
     })
     ); 
   }
-  void delete(int userid) async{
+  void delete() async{
     allTexts.remove(this);
     print (this.content);
     const url = 'http://127.0.0.1:5000/delete_data';
     http.Response response =await http.post(url, body: json.encode({
       'title':title,
       'content':content,
-      'user_id':userid,
+      'user_id':user_id,
       })
     );
   }
@@ -77,5 +94,3 @@ ParagraphText getFromTitle(String title){
   }
   return ParagraphText('','');
 }
-
-

@@ -1,31 +1,37 @@
+import 'package:dummy/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dummy/utils/paragraph_text.dart';
 import 'package:modal_side_sheet/modal_side_sheet.dart';
 
+import 'account_screen.dart';
 import 'content_screen.dart';
 import 'package:intl/intl.dart';
 
 
 class HomeScreen extends StatefulWidget {
-  final int userId;
-  const HomeScreen({Key? key, required this.userId}): super(key:key);
+  final String userName;
+  const HomeScreen({Key? key, required this.userName}): super(key:key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  bool openDrawer = false ;
+
+  late List<bool> isSelected= [true,false]; 
+
   @override
   void initState() {
     super.initState();
-    getTextData();
+    // getTextData();
   }
 
   @override
   Widget build(BuildContext context) {
-
+    String _selectedGender = 'male';
+    final TextEditingController _searchController = TextEditingController();
+    
     return Scaffold(
       backgroundColor: const Color(0xffFFFFFF), // WHITE
       body: CustomScrollView(
@@ -40,29 +46,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               IconButton(
                 icon: const Icon(Icons.account_box_outlined),
                 onPressed: () {
-                  showModalSideSheet(
-                   context: context,
-                    body: ListView.builder(
-                      itemBuilder:(context,index){
-                        return ListTile(
-                          leading: const Icon(Icons.face),
-                          title: Text("I am on $index index"),
-                          trailing: const Icon(Icons.safety_divider),
-                        );
-                      },
-                    )
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(builder: (context)=> AccountScreen(userName: widget.userName,))
                   );
                 },
               ),
             ],
             bottom: AppBar(
+              
               title: Container(
                 width: double.infinity,
                 height: 40,
                 color: Colors.white,
-                child: const Center(
+                child: Center(
                   child: TextField(
-                    decoration: InputDecoration(
+                    controller: _searchController,
+                    onChanged: (text){
+                      
+                    },
+                    decoration: const InputDecoration(
                         hintText: 'Search for Texts',
                         prefixIcon: Icon(Icons.search),
                     ),
@@ -80,11 +83,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   onTap: (){
                     Navigator.push(
                       context,
-                      CupertinoPageRoute(builder: (context)=> ShowContent(paragraphText:currentText,))
+                      CupertinoPageRoute(builder: (context)=> ContentScreen(paragraphText:currentText,))
                     );
                   },
                   child: Container(
-                    padding: const EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.all(30.0),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -97,9 +100,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               children: <Widget>[
                                 Text(
                                   currentText.title,
+                                  style:const  TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 Text(
                                   currentText.content,
+                                  style: const TextStyle(
+                                    fontSize: 12, 
+                                  ),
                                   maxLines: 1,
                                 ),
                               ],
@@ -121,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         onPressed:(){
           Navigator.of(context).push(
             CupertinoPageRoute(
-              builder: (_) => ShowContent(paragraphText:ParagraphText('',''),)
+              builder: (_) => ContentScreen(paragraphText:ParagraphText('',''),)
             )
           );
         },

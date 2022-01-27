@@ -84,7 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     'username':username,
                     'password':password})
                   ).then((response){
-                    if (response=="404"){
+                    if (response.body=="404"){
                       ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
@@ -101,7 +101,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       );
                       Navigator.pushReplacement(
                         context,
-                        CupertinoPageRoute(builder: (context) => HomeScreen(userId: 1,))
+                        CupertinoPageRoute(builder: (context) => LoginScreen())
                       );
                     }
                       // Navigator.pop(context);
