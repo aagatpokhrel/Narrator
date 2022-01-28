@@ -1,16 +1,12 @@
 import 'package:flutter/cupertino.dart';
-import 'package:settings_ui/settings_ui.dart';
-
 import 'home_screen.dart';
 import 'register_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:dummy/utils/paragraph_text.dart';
+import 'package:dummy/utils/session.dart';
+// import 'package:dummy/utils/paragraph_text.dart';
 
 class LoginScreen extends StatefulWidget {
-  static const String id = 'login_screen';
-
+  const LoginScreen({Key? key,}): super(key:key);
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -18,11 +14,12 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   String username = '';
   String password = '';
+  late Session session;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    session = Session();
   }
 
   @override
@@ -89,31 +86,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               child: TextButton(
                 onPressed: () async{
-                  const url = 'http://127.0.0.1:5000/login';
-                  await http.post(url, body: json.encode({
-                    'username':username,
-                    'password':password})
-                  ).then((response){
-                    if (response.body=="404"){
-                      ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Invalid Username of Password',
-                        ),
-                      ),
-                     );
-                    }
-                    else{
-                      user_id = int.parse(response.body);
-                      setState(() {
-                        getTextData();
-                      });
-                      Navigator.pushReplacement(
-                        context,
-                        CupertinoPageRoute(builder: (context) => HomeScreen(userName: username))
-                      );
-                    }
-                  });
                   if (username.isEmpty || password.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -124,7 +96,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                     return;
                   }
-                  
+                  final bool checkError = await session.setUser(username, password);
+                  if (checkError){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Invalid Username of Password',
+                        ),
+                      ),
+                     );
+                  }
+                  else{
+                    Navigator.pushReplacement(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => HomeScreen(session: session,),
+                      ),
+                    );
+                  } 
                 },
                 child: const Text(
                   'Login',

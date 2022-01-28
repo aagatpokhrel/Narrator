@@ -1,13 +1,10 @@
 import 'package:dummy/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:dummy/screens/home_screen.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:dummy/utils/session.dart';
 
 class RegisterScreen extends StatefulWidget {
-  static const String id = 'register_screen';
-
+  const RegisterScreen({Key? key,}): super(key:key);
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -15,6 +12,13 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   String username = '';
   String password = '';
+  late Session session;
+
+  @override
+  void initState() {
+    super.initState();
+    session = Session();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,34 +83,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               child: TextButton(
                 onPressed: ()async {
-                  const url = 'http://127.0.0.1:5000/register';
-                  await http.post(url, body: json.encode({
-                    'username':username,
-                    'password':password})
-                  ).then((response){
-                    if (response.body=="404"){
-                      ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Username already Exists',
-                        ),
-                      ),
-                     );
-                    }
-                    else{
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Successfully created account'),
-                        ),
-                      );
-                      Navigator.pushReplacement(
-                        context,
-                        CupertinoPageRoute(builder: (context) => LoginScreen())
-                      );
-                    }
-                      // Navigator.pop(context);
-                  });
-                  
                   if (username.isEmpty || password.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -117,8 +93,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     );
                     return;
                   }
-                  
-                },
+
+                  final bool checkError = await session.addUser(username,password);
+                  if (checkError){
+                    ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Username already Exists',
+                      ),
+                    ),
+                    );
+                  }
+                  else{
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Successfully created account'),
+                      ),
+                    );
+                    Navigator.pushReplacement(
+                      context,
+                      CupertinoPageRoute(builder: (context) => LoginScreen())
+                    );
+                  }
+                },   // Navigator.pop(context);
                 child:const Text(
                   'Register',
                   style: TextStyle(color: Colors.white, fontSize: 20),

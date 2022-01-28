@@ -1,17 +1,13 @@
-import 'package:dummy/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:dummy/utils/paragraph_text.dart';
-import 'package:modal_side_sheet/modal_side_sheet.dart';
-
 import 'account_screen.dart';
 import 'content_screen.dart';
 import 'package:intl/intl.dart';
-
+import 'package:dummy/utils/session.dart';
 
 class HomeScreen extends StatefulWidget {
-  final String userName;
-  const HomeScreen({Key? key, required this.userName}): super(key:key);
+  final Session session;
+  const HomeScreen({Key? key, required this.session,}): super(key:key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -19,12 +15,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
-  late List<bool> isSelected= [true,false]; 
-
+  late List<bool> isSelected= [true,false];
+  
   @override
   void initState() {
     super.initState();
-    // getTextData();
+    widget.session.getAllTexts();
+    setState(() {
+    });
   }
 
   @override
@@ -48,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 onPressed: () {
                   Navigator.push(
                       context,
-                      CupertinoPageRoute(builder: (context)=> AccountScreen(userName: widget.userName,))
+                      CupertinoPageRoute(builder: (context)=> AccountScreen(session: widget.session))
                   );
                 },
               ),
@@ -74,64 +72,64 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
           ),
-          // const SizedBox(height: 20,),
           SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                final currentText = allTexts[index];
-                return InkWell(
-                  onTap: (){
-                    Navigator.push(
-                      context,
-                      CupertinoPageRoute(builder: (context)=> ContentScreen(paragraphText:currentText,))
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    final currentText = widget.session.allTexts[index];
+                    return InkWell(
+                      onTap: (){
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(builder: (context)=> ContentScreen(indexData: index,session: widget.session,))
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(30.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              child: Container(
+                                padding:const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      currentText.title,
+                                      style:const  TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      currentText.content,
+                                      style: const TextStyle(
+                                        fontSize: 12, 
+                                      ),
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Text(DateFormat.jm().format(DateTime.now())),
+                          ],
+                        ),
+                      ),
                     );
                   },
-                  child: Container(
-                    padding: const EdgeInsets.all(30.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Expanded(
-                          child: Container(
-                            padding:const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  currentText.title,
-                                  style:const  TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  currentText.content,
-                                  style: const TextStyle(
-                                    fontSize: 12, 
-                                  ),
-                                  maxLines: 1,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Text(DateFormat.jm().format(DateTime.now())),
-                      ],
-                    ),
-                  ),
-                );
-              },
-              childCount: allTexts.length,
-            ),
+                  childCount: widget.session.allTexts.length,
+                ),
           ),
+          
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed:(){
           Navigator.of(context).push(
             CupertinoPageRoute(
-              builder: (_) => ContentScreen(paragraphText:ParagraphText('',''),)
+              builder: (_) => ContentScreen(indexData:widget.session.allTexts.length,session: widget.session)
             )
           );
         },

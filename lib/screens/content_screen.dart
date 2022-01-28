@@ -5,14 +5,16 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
-import 'package:dummy/utils/paragraph_text.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:dummy/utils/data.dart';
+import 'package:dummy/utils/session.dart';
 
 class ContentScreen extends StatefulWidget {
 
-  final ParagraphText paragraphText;
-  const ContentScreen({Key? key, required this.paragraphText}) : super(key: key);
+  final int indexData;
+  final Session session;
+  const ContentScreen({Key? key, required this.indexData, required this.session})
+    :super(key: key);
 
   @override
     _ContentScreenState createState() => _ContentScreenState();
@@ -21,6 +23,7 @@ class ContentScreen extends StatefulWidget {
 class _ContentScreenState extends State<ContentScreen> {
 
   bool isEdit = false;
+  late Data data;
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -35,14 +38,16 @@ class _ContentScreenState extends State<ContentScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.paragraphText.title==""){
+    if (widget.indexData >= widget.session.allTexts.length){
+      data = Data('','',-1);
       isEdit = true;
       _titleController.text = '';
       _descriptionController.text = '';
     }
     else{
-      _titleController.text = widget.paragraphText.title;
-      _descriptionController.text = widget.paragraphText.content;
+      data = widget.session.allTexts[widget.indexData];
+      _titleController.text = data.title;
+      _descriptionController.text = data.content;
     }
   }
 
@@ -51,7 +56,7 @@ class _ContentScreenState extends State<ContentScreen> {
   }
 
   void speak() async{
-    flutterTts.speak(widget.paragraphText.content);
+    flutterTts.speak(data.content);
   }
 
   void stop() async{
@@ -73,26 +78,45 @@ class _ContentScreenState extends State<ContentScreen> {
             actions: [              
               isEdit ? IconButton(
                 icon: const Icon(Icons.check_circle_outline_outlined),
-                onPressed: () {
+                onPressed: () async {
+                  if (data.textId >=0){
+                    if (data.content=='' && data.title==''){
+                      widget.session.deleteData(data.textId);
+                      data.textId = -1;
+                      isEdit = true;
+                    }
+                    else{
+                      widget.session.deleteData(data.textId);
+                      final textid = await widget.session.addData(data.title, data.content);
+                      data.textId = textid;
+                      isEdit = false;
+                    }
+                  }
+                  else{
+                    if (data.content !='' || data.title!=''){
+                      print ("Hurray");
+                      final int textid = await widget.session.addData(data.title, data.content);
+                      print ("Bye");
+                      data.textId = textid;
+                      isEdit = false;
+                    }
+                  }
+                  FocusManager.instance.primaryFocus?.unfocus();
                   setState(() {
-                    widget.paragraphText.delete();
-                    widget.paragraphText.addToAll();
-                    isEdit = false;
-                    FocusManager.instance.primaryFocus?.unfocus();
                   });
                 },
               ):
               IconButton(
                 icon: const Icon(Icons.delete_outline),
-                onPressed: () {
-                  print (widget.paragraphText.title);
-                  widget.paragraphText.delete();
+                onPressed: () async{
+                  if (data.textId >= 0){
+                    widget.session.deleteItem(widget.indexData);
+                  }
                   setState(() {
                   });
                   Navigator.pop(context);
                 },
               ),
-              
             ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -117,7 +141,7 @@ class _ContentScreenState extends State<ContentScreen> {
           if (result != null) {
             File file = File(result.files.single.path.toString());
             final fileContents = file.readAsStringSync();
-            widget.paragraphText.content = fileContents.toString();
+            data.content = fileContents.toString();
             _descriptionController.text = fileContents.toString();
           }
         },
@@ -136,7 +160,7 @@ class _ContentScreenState extends State<ContentScreen> {
                   });
                 },
                 onChanged: (text){
-                  widget.paragraphText.title = text;
+                  data.title = text;
                 },
                 controller: _titleController,
                 style: const TextStyle(
@@ -149,14 +173,13 @@ class _ContentScreenState extends State<ContentScreen> {
                 ),
               ),
               TextField(
-                
                 onTap: (){
                   setState(() {
                     isEdit = true;
                   });
                 },
                 onChanged: (text){
-                  widget.paragraphText.content = text;
+                  data.content = text;
                   setState(() {
                     isEdit = true;
                   });
@@ -212,8 +235,8 @@ class _ContentScreenState extends State<ContentScreen> {
         
         http.post(url, body: json.encode({
             'question':_text,
-            'title':widget.paragraphText.title,
-            'user_id': 1,
+            'title':data.title,
+            'user_id': widget.session.userId,
           })
         ).then((response) {
             flutterTts.speak(response.body);

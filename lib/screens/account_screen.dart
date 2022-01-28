@@ -1,14 +1,13 @@
-import 'dart:ui';
-
 import 'package:dummy/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:dummy/utils/session.dart';
 
 class AccountScreen extends StatefulWidget {
-  final String userName;
-
-  const AccountScreen({ Key? key, required this.userName }) : super(key: key);
+  
+  final Session session;
+  const AccountScreen({ Key? key, required this.session}) : super(key: key);
 
   @override
   _AccountScreenState createState() => _AccountScreenState();
@@ -31,24 +30,18 @@ class _AccountScreenState extends State<AccountScreen> {
                 CircleAvatar(
                   backgroundColor: const Color(0xffD3D3D3),
                   child: Text(
-                    widget.userName[0],
+                    widget.session.userName[0],
                     textAlign: TextAlign.left,
                   ),
                   radius: 50,
                 ),
                 const SizedBox(height: 15,),
                 Text(
-                  widget.userName,
+                  widget.session.userName,
                   style: const TextStyle(
                     fontSize: 16,
                   ),
                 ),
-                // Text(
-                //   'Password',
-                //   style: TextStyle(
-                //     fontSize: 16,
-                //   ),
-                // )
               ],
             )
           ),
