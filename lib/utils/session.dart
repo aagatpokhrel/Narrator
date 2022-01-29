@@ -58,12 +58,14 @@ class Session{
   }
 
   Future<List<Data>> getAllTexts() async {
+    // final List<Data> newTexts = [];
     const url = 'http://127.0.0.1:5000/get_data';
-    http.post(url, body:json.encode({
+    await http.post(url, body:json.encode({
       'user_id': userId
     })).then((response){
       final decoded = json.decode(response.body) as Map<String,dynamic>;
       final newdecoded= decoded['json_list'];
+      print (newdecoded.runtimeType);
       for (var i=0;i<newdecoded.length;i++){
         final p = Data(
           newdecoded[i]['title'],
@@ -73,6 +75,7 @@ class Session{
         allTexts.add(p);
       }
     });
+    // print (newTexts.length);
     return allTexts;
   }
 
