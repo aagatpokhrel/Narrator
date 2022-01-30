@@ -1,7 +1,7 @@
-import 'package:dummy/screens/login_screen.dart';
+import 'package:narrator/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:dummy/utils/session.dart';
+import 'package:narrator/utils/session_data.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key,}): super(key:key);

@@ -1,6 +1,17 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'data.dart';
+
+class Data{
+  late String title;
+  late String content;
+  late int textId;
+
+  Data(
+    this.title, 
+    this.content,
+    this.textId,
+  );
+}
 
 class Session{
 

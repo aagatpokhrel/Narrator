@@ -1,4 +1,4 @@
-import 'package:dummy/screens/login_screen.dart';
+import 'package:narrator/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
 

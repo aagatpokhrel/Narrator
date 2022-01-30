@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'home_screen.dart';
-import 'register_screen.dart';
+import 'package:narrator/screens/home_screen.dart';
+import 'package:narrator/screens/register_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:dummy/utils/session.dart';
-// import 'package:dummy/utils/paragraph_text.dart';
+import 'package:narrator/utils/session_data.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key,}): super(key:key);

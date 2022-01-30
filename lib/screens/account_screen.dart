@@ -1,8 +1,9 @@
-import 'package:dummy/screens/login_screen.dart';
+import 'package:narrator/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:dummy/utils/session.dart';
+import 'package:narrator/utils/session_data.dart';
+import 'package:narrator/utils/voice_handler.dart';
 
 class AccountScreen extends StatefulWidget {
   
@@ -18,7 +19,7 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Account Settings'),
+        title:const Text('Account Settings'),
       ),
       body:SettingsList(
         sections: [
@@ -65,13 +66,23 @@ class _AccountScreenState extends State<AccountScreen> {
             title: const Text('Voice Settings'),
             tiles: <SettingsTile>[
               SettingsTile.navigation(
-                leading: Icon(Icons.male),
-                title: Text('Voice'),
-                value: Text('Male'),
+                leading: (voiceData['voice']=="Male") ? const Icon(Icons.male) :const Icon(Icons.female),
+                title: const Text('Voice'),
+                value: Text('${voiceData['voice']}'),
+                onPressed: (text){
+                  setState(() {
+                    if (voiceData['voice']=="Male"){
+                      voiceData['voice'] = "Female";
+                    }
+                    else{
+                      voiceData['voice'] = "Male";
+                    }
+                  });
+                },
               ),
               SettingsTile.navigation(
                 leading: Icon(Icons.speed),
-                title: Text('Speed'),
+                title: const Text('Speed'),
                 value: Text('1x'),
               ),
               SettingsTile.navigation(

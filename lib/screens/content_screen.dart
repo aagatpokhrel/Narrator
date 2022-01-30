@@ -2,12 +2,9 @@ import 'dart:io';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:flutter_tts/flutter_tts.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
-import 'package:dummy/utils/data.dart';
-import 'package:dummy/utils/session.dart';
+import 'package:narrator/utils/session_data.dart';
+import 'package:narrator/utils/voice_handler.dart';
 
 class ContentScreen extends StatefulWidget {
 
@@ -27,17 +24,18 @@ class _ContentScreenState extends State<ContentScreen> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  late  VoiceHandler _voiceHandler;
 
-  FlutterTts flutterTts = FlutterTts();
+  // FlutterTts flutterTts = FlutterTts();
   late String contentOfFile;
   final stt.SpeechToText _speech= stt.SpeechToText();
   bool _isListening = false;
   String _text = 'Press the button and start speaking';
-  double _confidence = 1.0;
 
   @override
   void initState() {
     super.initState();
+    _voiceHandler = VoiceHandler(widget.session.userId);
     if (widget.indexData >= widget.session.allTexts.length){
       data = Data('','',-1);
       isEdit = true;
@@ -49,24 +47,13 @@ class _ContentScreenState extends State<ContentScreen> {
       _titleController.text = data.title;
       _descriptionController.text = data.content;
     }
-  }
-
-  void pause() async{
-
-  }
-
-  void speak() async{
-    flutterTts.speak(data.content);
-  }
-
-  void stop() async{
-    flutterTts.stop();
+    _voiceHandler.setContent(data.title , data.content);
   }
 
   @override
   void dispose(){
     super.dispose();
-    flutterTts.stop();
+    _voiceHandler.stop();
     _speech.stop();
   }
 
@@ -101,6 +88,7 @@ class _ContentScreenState extends State<ContentScreen> {
                       isEdit = false;
                     }
                   }
+                  _voiceHandler.setContent(data.title, data.content);
                   FocusManager.instance.primaryFocus?.unfocus();
                   setState(() {
                   });
@@ -211,37 +199,17 @@ class _ContentScreenState extends State<ContentScreen> {
       );
       if (available) {
         setState(() => _isListening = true);
-        flutterTts.stop();
+        _voiceHandler.stop();
         _speech.listen(
           onResult: (val) => setState(() {
             _text = val.recognizedWords;
-            if (val.hasConfidenceRating && val.confidence > 0) {
-              _confidence = val.confidence;
-            }
           }),
         );
       }
     } else {
       setState(() => _isListening = false);
       _speech.stop();
-      if (_text=='play'){
-        speak();
-      }
-      if (_text=='stop'){
-        stop();
-      }
-      else{
-        const url = 'http://127.0.0.1:5000/question_answer';
-        
-        http.post(url, body: json.encode({
-            'question':_text,
-            'title':data.title,
-            'user_id': widget.session.userId,
-          })
-        ).then((response) {
-            flutterTts.speak(response.body);
-        });
-      }
+      _voiceHandler.handleText(_text);
     }
   }
 }
