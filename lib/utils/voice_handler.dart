@@ -1,65 +1,99 @@
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_azure_tts/flutter_azure_tts.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'dart:typed_data';
+import 'package:narrator/utils/constants.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
-Map<String,dynamic> voiceData = {'voice':'Female','speed':1, 'pitch':1};
+Map<String,dynamic> voiceData = {
+  'gender':true,
+  'speed':1,
+  'pitch':1
+}; //gender 1 represents male and 0 for female
 
 class VoiceHandler{
-  FlutterTts flutterTts = FlutterTts();
   late int userId;
   late String content;
-  late String title;
-  final String femalevoice = "Karen";
-  final String malevoice = "Ken"; 
+  late int textId;
+  late Future<Uint8List> audiobytes;
+
+  final _player = AudioPlayer();
+  late FlutterTts flutterTts;
+
+  late Future<Voice> voice;
 
   VoiceHandler(int _userId){
+    flutterTts = FlutterTts();
     userId = _userId;  
-    flutterTts.setVoice({"name": "Karen", "locale": "en-AU"});
+    AzureTts.init(
+      subscriptionKey: "81662ce970af461690a18918d4150812", //protect this
+      region: "southeastasia", //protect this.
+      withLogs: true
+    );
+    voice = setVoice();
   }
 
-  setContent(String _title, String _content){
+  Future<Voice> setVoice() async{
+    final voicesResponse =await AzureTts.getAvailableVoices() as VoicesSuccess;
+    return voicesResponse.voices
+      .where((element) =>
+          element.voiceType == "Neural" && element.locale.startsWith("en-") && element.localName=="Ashley")
+      .toList(growable: false)[0];
+  }
+
+  Future<Uint8List> getAudio() async{
+    TtsParams params = TtsParams(
+      voice: await voice,
+      audioFormat: AudioOutputFormat.audio16khz32kBitrateMonoMp3,
+      text: content
+    );
+    final ttsResponse = await AzureTts.getTts(params) as AudioSuccess;
+    return ttsResponse.audio;
+  } 
+
+  setContent(int _textId, String _content) async{
     content = _content;
-    title = _title;
+    textId = _textId;
+    audiobytes = getAudio();
   }
 
   handleText(String text){
-    // final String voice = (voiceData['voice']=="Female")? femalevoice:malevoice;
-    // flutterTts.setVoice({'name':voice});
+    
     if (text.toLowerCase()=='play'){
-        speak();
-      }
+        playContent();
+    }
     else if (text.toLowerCase()=='stop'){
       stop();
     }
     else{
-      const url = 'http://127.0.0.1:5000/question_answer';
+      String url = baseUrl+'question_answer';
       
-      http.post(url, body: json.encode({
+      http.post(Uri.parse(url), body: json.encode({
           'question':text,
-          'title':title,
+          'textId':textId,
           'user_id':userId,
         })
       ).then((response) {
-          flutterTts.speak(response.body);
+          speak(response.body);
       });
     }
   }
-  void speak(){
-    flutterTts.speak(content);
+  void speak(text) async{
+    await flutterTts.speak(text);
+  }
+  void playContent() async{
+    _player.playBytes(await audiobytes);
   }
 
   void stop(){
     flutterTts.stop();
+    _player.stop();
   }
 
   void pause(){
 
   }
-
-  void playFrom(){
-
-  }
-
   void changeVoice(){
 
   }

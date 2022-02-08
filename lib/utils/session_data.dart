@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:narrator/utils/constants.dart';
 
 class Data{
   late String title;
@@ -13,6 +14,7 @@ class Data{
   );
 }
 
+
 class Session{
 
   late int userId;
@@ -25,9 +27,9 @@ class Session{
   }
 
   Future<int> addData(String title, String content) async{
-    const url = 'http://127.0.0.1:5000/add_data';
+    String url = baseUrl+'add_data';
     late int textid;
-    await http.post(url, body: json.encode({
+    await http.post(Uri.parse(url), body: json.encode({
       'title':title,
       'content':content,
       'user_id':userId
@@ -46,8 +48,8 @@ class Session{
   void deleteItem(int index) async{
     final _textId = allTexts[index].textId;
     allTexts.removeAt(index);
-    const url = 'http://127.0.0.1:5000/delete_data';
-    await http.post(url, body: json.encode({
+    String url = baseUrl+'delete_data';
+    await http.post(Uri.parse(url), body: json.encode({
       'user_id':userId,
       'text_id':_textId,
       })
@@ -60,8 +62,8 @@ class Session{
         allTexts.remove(allTexts[i]);
       }
     }
-    const url = 'http://127.0.0.1:5000/delete_data';
-    await http.post(url, body: json.encode({
+    String url = baseUrl+'delete_data';
+    await http.post(Uri.parse(url), body: json.encode({
       'user_id':userId,
       'text_id':_textId,
       })
@@ -70,8 +72,8 @@ class Session{
 
   Future<List<Data>> getAllTexts() async {
     // final List<Data> newTexts = [];
-    const url = 'http://127.0.0.1:5000/get_data';
-    await http.post(url, body:json.encode({
+    String url = baseUrl+'get_data';
+    await http.post(Uri.parse(url), body:json.encode({
       'user_id': userId
     })).then((response){
       final decoded = json.decode(response.body) as Map<String,dynamic>;
@@ -91,8 +93,8 @@ class Session{
   }
 
   Future<bool> setUser(String username, String password) async{
-    const url = 'http://127.0.0.1:5000/login';
-    await http.post(url, body: json.encode({
+    String url = baseUrl+'login';
+    await http.post(Uri.parse(url), body: json.encode({
       'username':username,
       'password':password
     })).then((response){
@@ -110,8 +112,8 @@ class Session{
   }
 
   Future <bool> addUser(String username, String password)async {
-    const url = 'http://127.0.0.1:5000/register';
-    await http.post(url, body: json.encode({
+    String url = baseUrl+'register';
+    await http.post(Uri.parse(url), body: json.encode({
       'username':username,
       'password':password
     })).then((response){

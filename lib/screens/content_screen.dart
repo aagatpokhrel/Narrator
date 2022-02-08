@@ -46,8 +46,8 @@ class _ContentScreenState extends State<ContentScreen> {
       data = widget.session.allTexts[widget.indexData];
       _titleController.text = data.title;
       _descriptionController.text = data.content;
+      _voiceHandler.setContent(data.textId , data.content);
     }
-    _voiceHandler.setContent(data.title , data.content);
   }
 
   @override
@@ -62,7 +62,33 @@ class _ContentScreenState extends State<ContentScreen> {
      return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-            actions: [              
+            actions: [
+              ((_descriptionController.text==''))? 
+              IconButton(
+                icon:  const Icon(Icons.upload_file),
+                onPressed: () async{
+                  FilePickerResult? result = await FilePicker.platform.pickFiles(
+                  type: FileType.custom,
+                  allowedExtensions: ['txt'],
+                  );   
+                  if (result != null) {
+                    File file = File(result.files.single.path.toString());
+                    final fileContents = file.readAsStringSync();
+                    data.content = fileContents.toString();
+                    _descriptionController.text = fileContents.toString();
+                  }
+                },
+              ):
+              IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: (){
+                  setState(() {
+                    _descriptionController.text = '';
+                    isEdit = true;
+                    data.content = '';
+                  });
+                },
+              ),            
               isEdit ? IconButton(
                 icon: const Icon(Icons.check_circle_outline_outlined),
                 onPressed: () async {
@@ -81,14 +107,12 @@ class _ContentScreenState extends State<ContentScreen> {
                   }
                   else{
                     if (data.content !='' || data.title!=''){
-                      print ("Hurray");
                       final int textid = await widget.session.addData(data.title, data.content);
-                      print ("Bye");
                       data.textId = textid;
                       isEdit = false;
                     }
                   }
-                  _voiceHandler.setContent(data.title, data.content);
+                  _voiceHandler.setContent(data.textId, data.content);
                   FocusManager.instance.primaryFocus?.unfocus();
                   setState(() {
                   });
@@ -107,11 +131,11 @@ class _ContentScreenState extends State<ContentScreen> {
               ),
             ],
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterFloat,
       floatingActionButton: (!isEdit)? AvatarGlow(
         animate: _isListening,
         glowColor: Theme.of(context).primaryColor,
-        endRadius: 75.0,
+        endRadius: 50.0,
         duration: const Duration(milliseconds: 1000),
         repeatPauseDuration: const Duration(milliseconds: 100),
         repeat: true,
@@ -119,20 +143,6 @@ class _ContentScreenState extends State<ContentScreen> {
           onPressed: _listen,
           child: Icon(_isListening ? Icons.mic : Icons.mic_none),
         ),
-      ): ((_descriptionController.text==''))? FloatingActionButton(
-        child: const Icon(Icons.upload_file_outlined) ,
-        onPressed: ()async {
-          FilePickerResult? result = await FilePicker.platform.pickFiles(
-            type: FileType.custom,
-            allowedExtensions: ['txt'],
-          );   
-          if (result != null) {
-            File file = File(result.files.single.path.toString());
-            final fileContents = file.readAsStringSync();
-            data.content = fileContents.toString();
-            _descriptionController.text = fileContents.toString();
-          }
-        },
       ):null,
 
       body: SingleChildScrollView(
@@ -172,7 +182,7 @@ class _ContentScreenState extends State<ContentScreen> {
                     isEdit = true;
                   });
                 },
-                maxLines: 14,
+                maxLines: 20,
                 controller: _descriptionController,
                 style: const TextStyle(
                     fontWeight: FontWeight.w400,

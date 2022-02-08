@@ -15,6 +15,12 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
+  
+  @override
+  void initState(){
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,13 +77,8 @@ class _AccountScreenState extends State<AccountScreen> {
                 value: Text('${voiceData['voice']}'),
                 onPressed: (text){
                   setState(() {
-                    if (voiceData['voice']=="Male"){
-                      voiceData['voice'] = "Female";
-                    }
-                    else{
-                      voiceData['voice'] = "Male";
-                    }
                   });
+                 
                 },
               ),
               SettingsTile.navigation(
@@ -86,6 +87,8 @@ class _AccountScreenState extends State<AccountScreen> {
                 value: Text('1x'),
               ),
               SettingsTile.navigation(
+                onPressed: (text){
+                },
                 leading: Icon(Icons.male),
                 title: Text('Pitch'),
                 value: Text('1'),
