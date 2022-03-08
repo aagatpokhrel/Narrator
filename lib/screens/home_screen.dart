@@ -124,7 +124,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ],
                             ),
                           ),
-                          Text(DateFormat.jm().format(DateTime.now())),
+                          Column(
+                            children: [
+                              Text(currentText.date.split(' ')[1]),
+                              Text(currentText.date.split(' ')[0]),
+                            ],
+                          )
                         ],
                       ),
                     ),

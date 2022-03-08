@@ -5,19 +5,20 @@ import 'package:narrator/utils/constants.dart';
 class Data{
   late String title;
   late String content;
+  late String date;
   late int textId;
 
   Data(
     this.title, 
     this.content,
+    this.date,
     this.textId,
   );
 }
 
-
 class Session{
-
   late int userId;
+  late String fullName;
   late String userName;
   late String passWord;
   late List<Data> allTexts;
@@ -26,19 +27,19 @@ class Session{
     allTexts = [];
   }
 
-  Future<int> addData(String title, String content) async{
+  Future<int> addData(String title, String content, String date) async{
     String url = baseUrl+'add_data';
     late int textid;
     await http.post(Uri.parse(url), body: json.encode({
       'title':title,
       'content':content,
+      'date':date,
       'user_id':userId
     })
     ).then((response){
-      print ('I am inside');
       textid = int.parse(response.body);
       if (response.body!="404"){
-        final a = Data(title,content,textid);
+        final a = Data(title,content,date,textid);
         allTexts.add(a);        
       }
     }); 
@@ -71,24 +72,22 @@ class Session{
   }
 
   Future<List<Data>> getAllTexts() async {
-    // final List<Data> newTexts = [];
     String url = baseUrl+'get_data';
     await http.post(Uri.parse(url), body:json.encode({
       'user_id': userId
     })).then((response){
       final decoded = json.decode(response.body) as Map<String,dynamic>;
       final newdecoded= decoded['json_list'];
-      print (newdecoded.runtimeType);
       for (var i=0;i<newdecoded.length;i++){
         final p = Data(
           newdecoded[i]['title'],
           newdecoded[i]['content'],
+          newdecoded[i]['date'],
           newdecoded[i]['text_id']
         );
         allTexts.add(p);
       }
     });
-    // print (newTexts.length);
     return allTexts;
   }
 
@@ -102,18 +101,22 @@ class Session{
         return false;
       }
       else{
-        userName = username;
-        passWord = password;
-        userId = int.parse(response.body); 
+        final decoded = json.decode(response.body) as Map<String,dynamic>;
+        fullName = decoded['fullname'];
+        userName = decoded['username'];
+        passWord = decoded['password'];
+        userId = decoded['user_id']; 
         return true;
       }
     });
     return false;
   }
 
-  Future <bool> addUser(String username, String password)async {
+  Future <bool> addUser(String fullname, String username, String password)async {
     String url = baseUrl+'register';
+    print ("Hello World again");
     await http.post(Uri.parse(url), body: json.encode({
+      'fullname':fullname,
       'username':username,
       'password':password
     })).then((response){

@@ -55,11 +55,6 @@ class _AccountScreenState extends State<AccountScreen> {
           SettingsSection(
             title: const Text('Common'),
             tiles: <SettingsTile>[
-              SettingsTile.navigation(
-                leading: const Icon(Icons.font_download),
-                title: const Text('Font Size'),
-                value:const  Text('16'),
-              ),
               SettingsTile.switchTile(
                 onToggle: (value) {},
                 initialValue: true,
@@ -72,32 +67,55 @@ class _AccountScreenState extends State<AccountScreen> {
             title: const Text('Voice Settings'),
             tiles: <SettingsTile>[
               SettingsTile.navigation(
-                leading: (voiceData['voice']=="Male") ? const Icon(Icons.male) :const Icon(Icons.female),
+                leading: voiceData['gender'] ? const Icon(Icons.male) :const Icon(Icons.female),
                 title: const Text('Voice'),
-                value: Text('${voiceData['voice']}'),
+                value: voiceData['gender'] ? const Text('Male'): const Text('Female'),
                 onPressed: (text){
                   setState(() {
+                    if (voiceData['gender']){
+                      voiceData['gender'] = false;
+                    }
+                    else{
+                      voiceData['gender'] = true;
+                    }
                   });
-                 
                 },
               ),
               SettingsTile.navigation(
-                leading: Icon(Icons.speed),
+                leading: const Icon(Icons.speed),
                 title: const Text('Speed'),
-                value: Text('1x'),
+                value: Text('${voiceData['speed']}x'),
+                onPressed: (text){
+                  setState(() {
+                    if (voiceData['speed'] == 1){
+                    voiceData['speed'] = 1.5;
+                    }
+                    else if(voiceData['speed'] == 1.5){
+                      voiceData['speed'] = 2;                    
+                    }
+                    else if (voiceData['speed']== 2){
+                      voiceData['speed'] = 1;
+                    }
+                  });
+                }
               ),
               SettingsTile.navigation(
                 onPressed: (text){
+                  setState(() {
+                    if (voiceData['pitch'] == 1){
+                    voiceData['pitch'] = 2;
+                    }
+                    else if(voiceData['pitch'] == 2){
+                      voiceData['pitch'] = 0;                    
+                    }
+                    else if (voiceData['pitch']== 0){
+                      voiceData['pitch'] = 1;
+                    }
+                  });
                 },
-                leading: Icon(Icons.male),
-                title: Text('Pitch'),
-                value: Text('1'),
-              ),
-              SettingsTile.switchTile(
-                onToggle: (value) {},
-                initialValue: true,
-                leading: Icon(Icons.format_paint),
-                title: Text('Highlight Answered Data'),
+                leading: const Icon(Icons.arrow_upward),
+                title: const Text('Pitch'),
+                value: Text('${voiceData['pitch']}'),
               ),
             ],
           ),

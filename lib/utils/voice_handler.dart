@@ -17,7 +17,7 @@ class VoiceHandler{
   late String content;
   late int textId;
   late Future<Uint8List> audiobytes;
-
+  bool isPaused = false;
   final _player = AudioPlayer();
   late FlutterTts flutterTts;
 
@@ -36,10 +36,18 @@ class VoiceHandler{
 
   Future<Voice> setVoice() async{
     final voicesResponse =await AzureTts.getAvailableVoices() as VoicesSuccess;
-    return voicesResponse.voices
+    if (voiceData['gender']){
+      return voicesResponse.voices
+        .where((element) =>
+          element.voiceType == "Neural" && element.locale.startsWith("en-") && element.localName=="Eric")
+          .toList(growable: false)[0];
+    }
+    else{
+      return voicesResponse.voices
       .where((element) =>
           element.voiceType == "Neural" && element.locale.startsWith("en-") && element.localName=="Ashley")
       .toList(growable: false)[0];
+    }
   }
 
   Future<Uint8List> getAudio() async{
@@ -58,13 +66,16 @@ class VoiceHandler{
     audiobytes = getAudio();
   }
 
-  handleText(String text){
+  String handleText(String text){
     
     if (text.toLowerCase()=='play'){
         playContent();
     }
     else if (text.toLowerCase()=='stop'){
       stop();
+    }
+    else if (dialog.containsKey(text.toLowerCase())){
+      speak(dialog[text.toLowerCase()]);
     }
     else{
       String url = baseUrl+'question_answer';
@@ -76,8 +87,10 @@ class VoiceHandler{
         })
       ).then((response) {
           speak(response.body);
+          return response.body;
       });
     }
+    return '';
   }
   void speak(text) async{
     await flutterTts.speak(text);
@@ -92,9 +105,8 @@ class VoiceHandler{
   }
 
   void pause(){
-
+    _player.pause();
   }
   void changeVoice(){
-
   }
 }

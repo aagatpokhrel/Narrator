@@ -12,6 +12,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   String username = '';
   String password = '';
+  String fullname = '';
   late Session session;
 
   @override
@@ -34,6 +35,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     width: 200,
                     height: 150,
                     child: Image.asset('assets/images/logo.png')),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                15.0,
+                20.0,
+                15.0,
+                0.0,
+              ),
+              child: TextField(
+                onChanged: (value) {
+                  fullname = value;
+                },
+                textInputAction: TextInputAction.next,
+                decoration:const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Full Name',
+                    hintText: 'Enter Full Name'),
               ),
             ),
             Padding(
@@ -93,8 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     );
                     return;
                   }
-
-                  final bool checkError = await session.addUser(username,password);
+                  final bool checkError = await session.addUser(fullname,username,password);
                   if (checkError){
                     ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
