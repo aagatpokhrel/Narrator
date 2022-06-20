@@ -27,8 +27,8 @@ class VoiceHandler{
     flutterTts = FlutterTts();
     userId = _userId;  
     AzureTts.init(
-      subscriptionKey: "81662ce970af461690a18918d4150812", //protect this
-      region: "southeastasia", //protect this.
+      subscriptionKey: "##########",  //this is key to your azure service
+      region: "#########", 
       withLogs: true
     );
     voice = setVoice();
